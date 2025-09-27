@@ -1,0 +1,66 @@
+name: Databricks Notebook CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      
+
+jobs:
+  test-notebooks:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/dev'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: Install dependencies
+        run: pip install databricks-cli
+
+      - name: Configure Databricks CLI
+        env:
+          DATABRICKS_HOST: ${{ secrets.DEV_DEPLOYMENT_URL }}
+          DATABRICKS_TOKEN: ${{ secrets.DEV_DEPLOYMENT_TOKEN }}
+          REPO_PATH: /Workspace/Users/saireddygaddam123@gmail.com/DEV-CICD-DB-GIT-FOLDER
+        # run: |
+        #   databricks configure --token
+
+      - name: Run tests
+        run: |
+          # Add your notebook testing commands here
+          echo "Running notebook tests"
+
+  deploy-prod:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs: test-notebooks
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: Install dependencies
+        run: pip install databricks-cli
+
+      - name: Configure Databricks CLI
+        env:
+          DATABRICKS_HOST: ${{ secrets.PROD_DEPLOYMENT_URL }}
+          DATABRICKS_TOKEN: ${{ secrets.PROD_DEPLOYMENT_TOKEN }}
+          REPO_PATH: /Workspace/Users/saireddygaddam123@gmail.com/PROD-CICD-DB-GIT-FOLDER
+        # run: |
+        #   databricks configure --token
+
+      - name: Deploy to Production
+        run: |
+          # Replace with actual deployment command such as:
+          # databricks workspace import_dir ~/dev-notebooks /Users/your-user@example.com/notebooks
+          echo "Deploying notebooks to production"
