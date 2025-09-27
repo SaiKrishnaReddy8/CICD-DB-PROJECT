@@ -59,4 +59,4 @@ jobs:
       - name: Update Databricks Repo (Prod)
         run: |
           databricks repos update "${REPO_PATH}" \
-            --branch "${{ env.branch }}"
+            --branch "main"
